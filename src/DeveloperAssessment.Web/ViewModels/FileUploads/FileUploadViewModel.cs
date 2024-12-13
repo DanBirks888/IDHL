@@ -1,6 +1,6 @@
 namespace DeveloperAssessment.Web.ViewModels.FileUploads;
 
-public class FileUpload
+public class FileUploadViewModel
 {
     public Guid Id { get; init; }
     public byte[] Bytes { get; init; }

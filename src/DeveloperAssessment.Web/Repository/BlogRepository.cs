@@ -11,7 +11,7 @@ public class BlogRepository : IBlogRepository
     private readonly IMemoryCache _memoryCache;
     private readonly ILogger<BlogRepository> _logger;
 
-    private readonly string _cacheKey = "blog";
+    private readonly string _cacheKey = "blogList";
 
     public BlogRepository(IFileService fileService, IMemoryCache memoryCache, ILogger<BlogRepository> logger)
     {
@@ -20,57 +20,27 @@ public class BlogRepository : IBlogRepository
         _logger = logger;
     }
 
-    public BlogList GetBlogs()
+    public BlogList GetAll()
     {
         if (_memoryCache.TryGetValue(_cacheKey, out BlogList? cachedBlogList))
         {
             return cachedBlogList ?? new BlogList();
         }
 
-        try
-        {
-            var blogList = _fileService.DeserializeFromFile<BlogList>(Constants.FileNames.BlogData);
-            _memoryCache.Set(_cacheKey, blogList, DateTimeOffset.Now.AddHours(1));
-            return blogList;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error fetching blogs from file");
-            return new BlogList();
-        }
+        var blogList = _fileService.DeserializeFromFile<BlogList>(Constants.FileNames.BlogData);
+        _memoryCache.Set(_cacheKey, blogList, DateTimeOffset.Now.AddHours(1));
+        return blogList;
     }
 
     public BlogPost GetById(int id)
     {
-        if (_memoryCache.TryGetValue(_cacheKey, out BlogPost? cachedBlogList))
-        {
-            return cachedBlogList ?? new BlogPost();
-        }
-
-        try
-        {
-            var blogList = _fileService.DeserializeFromFile<BlogList>(Constants.FileNames.BlogData);
-            _memoryCache.Set(_cacheKey, blogList, DateTimeOffset.Now.AddHours(1));
-            return blogList.BlogPosts.FirstOrDefault(blog => blog.Id == id) ?? new();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error fetching blogs from file");
-            return new BlogPost();
-        }
+        return GetAll().BlogPosts.FirstOrDefault(blog => blog.Id == id) ?? new();
     }
 
-    public void SaveBlogs(BlogList blogList)
+    public void Save(BlogList blogList)
     {
-        try
-        {
-            var jsonBlogs = JsonSerializer.Serialize(blogList);
-            _fileService.WriteToFile(Constants.FileNames.BlogData, jsonBlogs);
-            _memoryCache.Set(_cacheKey, blogList, DateTimeOffset.Now.AddHours(1));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error saving blogs to file");
-        }
+        var jsonBlogs = JsonSerializer.Serialize(blogList);
+        _fileService.WriteToFile(Constants.FileNames.BlogData, jsonBlogs);
+        _memoryCache.Set(_cacheKey, blogList, DateTimeOffset.Now.AddHours(1));
     }
 }

@@ -9,5 +9,5 @@ public interface IBlogService
     BlogPost Get(int id);
     BlogList GetAll();
     BlogPost AddCommentToBlogPost(CommentPostModel commentPostModel);
-    BlogPost ReplyToBlogPost(ReplyPostModel replyPostModel);
+    BlogPost ReplyToComment(ReplyPostModel replyPostModel);
 }

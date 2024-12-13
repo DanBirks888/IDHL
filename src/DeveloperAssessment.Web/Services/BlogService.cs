@@ -9,51 +9,48 @@ namespace DeveloperAssessment.Web.Services;
 public class BlogService : IBlogService
 {
     private readonly IFileService _fileService;
-    private readonly IMemoryCache _memoryCache;
     private readonly ILogger<BlogService> _logger;
     private readonly IBlogRepository _blogRepository;
 
     public BlogService(ILogger<BlogService> logger,
         IFileService fileService,
-        IMemoryCache memoryCache,
         IBlogRepository blogRepository)
     {
         _logger = logger;
         _fileService = fileService;
-        _memoryCache = memoryCache;
         _blogRepository = blogRepository;
+    }
+
+    public BlogList GetAll()
+    {
+        return _blogRepository.GetAll();
     }
 
     public BlogPost Get(int id = 0)
     {
-        var blogsViewModel = _blogRepository.GetBlogs();
+        var blogsViewModel = _blogRepository.GetAll();
 
         return id == 0
             ? blogsViewModel.BlogPosts.FirstOrDefault() ?? new BlogPost()
             : blogsViewModel.BlogPosts.FirstOrDefault(blog => blog.Id == id) ?? new BlogPost();
     }
 
-    public BlogList GetAll()
-    {
-        return _blogRepository.GetBlogs();
-    }
-
     public BlogPost AddCommentToBlogPost(CommentPostModel commentPostModel)
     {
-        var blogList = _blogRepository.GetBlogs();
+        var blogList = GetAll();
         blogList
             .BlogPosts
             .FirstOrDefault(blog => blog.Id == commentPostModel.BlogId)
             ?.Comments
             .Add(commentPostModel.ToComment());
 
-        _blogRepository.SaveBlogs(blogList);
+        _blogRepository.Save(blogList);
         return _blogRepository.GetById(commentPostModel.BlogId);
     }
 
-    public BlogPost ReplyToBlogPost(ReplyPostModel replyPostModel)
+    public BlogPost ReplyToComment(ReplyPostModel replyPostModel)
     {
-        var blogList = _blogRepository.GetBlogs();
+        var blogList = GetAll();
         blogList
             .BlogPosts
             .FirstOrDefault(blog => blog.Id == replyPostModel.BlogId)
@@ -61,7 +58,7 @@ public class BlogService : IBlogService
             .FirstOrDefault(comment => comment.Id == replyPostModel.CommentId)
             ?.Replies.Add(replyPostModel.Message);
 
-        _blogRepository.SaveBlogs(blogList);
+        _blogRepository.Save(blogList);
         return _blogRepository.GetById(replyPostModel.BlogId);
     }
 }

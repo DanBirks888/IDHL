@@ -1,5 +1,6 @@
 using DeveloperAssessment.Web.DomainModels;
 using DeveloperAssessment.Web.ViewModels.Blog;
+using DeveloperAssessment.Web.ViewModels.FileUploads;
 using DeveloperAssessment.Web.ViewModels.Post;
 
 namespace DeveloperAssessment.Web.Extensions;
@@ -51,7 +52,7 @@ public static class BlogExtensions
 
         return new CommentViewModel
         {
-            Id = comment.Id == Guid.Empty ? Guid.NewGuid() : comment.Id,
+            Id = comment.Id,
             Name = comment.Name,
             Date = comment.Date,
             EmailAddress = comment.EmailAddress,
@@ -71,6 +72,7 @@ public static class BlogExtensions
         return new Comment
         {
             Id = Guid.NewGuid(),
+            FileUploadId = comment.FormUploadId,
             Name = comment.Name,
             Date = DateTime.Now,
             EmailAddress = comment.Email,
@@ -78,4 +80,5 @@ public static class BlogExtensions
             Replies = []
         };
     }
+
 }

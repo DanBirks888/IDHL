@@ -1,18 +1,15 @@
 var app = app || {};
-app.contactUsController = Vue.createApp({
+app.blogController = Vue.createApp({
     data() {
         return {
-            blogViewModel: {
-                comments: {
-                    replies: [],
-                }
-            },
+            blogViewModel: {comments: {replies: []}},
             formData: {
                 blogId: null,
                 commentId: null,
                 name: null,
                 email: null,
                 message: null,
+                fileUpload: null,
             },
             reply: {
                 blogId: null,
@@ -26,68 +23,108 @@ app.contactUsController = Vue.createApp({
         }
     },
     mounted() {
-        let self = this;
-        self.blogViewModel = blogViewModel;
-        self.reply.blogId = self.blogViewModel.id;
-        self.formData.blogId = self.blogViewModel.id;
-        self.originalFormData = JSON.parse(JSON.stringify(self.formData));
-        self.originalReply = JSON.parse(JSON.stringify(self.reply));
-        self.toast = new bootstrap.Toast('#form-toast');
+        this.initializeViewModel();
+        this.toast = new bootstrap.Toast('#form-toast');
     },
     methods: {
+        initializeViewModel() {
+            this.blogViewModel = blogViewModel;
+            this.reply.blogId = this.blogViewModel.id;
+            this.formData.blogId = this.blogViewModel.id;
+            this.originalFormData = this.deepClone(this.formData);
+            this.originalReply = this.deepClone(this.reply);
+        },
+
         setupReply(id) {
-            let self = this;
-            if (self.reply.commentId) {
-                new bootstrap.Collapse(`#collapse-${self.reply.commentId}`);
+            if (this.reply.commentId) {
+                this.toggleCollapse(`#collapse-${this.reply.commentId}`, false);
             }
-            self.resetReplyData();
-            self.reply.commentId = id;
-            new bootstrap.Collapse(`#collapse-${id}`).show();
+            this.resetReplyData();
+            this.reply.commentId = id;
+            this.toggleCollapse(`#collapse-${id}`, true);
         },
-        async sendReply(id) {
-            let self = this;
-            if (!self.reply.message || !self.reply.commentId || !self.reply.blogId) {
-                self.showToast("Reply Failed!", "Please try again");
+
+        async sendReply() {
+            if (!this.reply.message || !this.reply.commentId || !this.reply.blogId) {
+                return this.showToast("Reply Failed!", "Please try again");
             }
-            self.newBlogModel = await self.callApi('/BlogApi/ReplyToComment/', self.reply);
-            self.blogViewModel = self.newBlogModel;
-            new bootstrap.Collapse(`#collapse-${self.reply.commentId}`);
-            self.resetReplyData();
-        },
-        async sendForm(event) {
-            let self = this;
-            event.preventDefault();
-            self.blogViewModel = await self.callApi('/BlogApi/SubmitComment/', self.formData);
-            self.showToast(`Thank you for your comment ${self.formData.name}!`,
-                "Check the bottom of this page to see it appear dynamically.")
-            self.resetFormData();
-        },
-        async callApi(url, bodyData) {
-            const res = await fetch(url, {
+            const res = await fetch('/BlogApi/ReplyToComment/', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(bodyData)
-            }).catch(error => console.log(error));
-            return await res.json();
+            }).catch(res => console.log(res));
+
+            this.blogViewModel = res.json();
+            this.toggleCollapse(`#collapse-${this.reply.commentId}`, false);
+            this.resetReplyData();
         },
-        showToast(messageHeader, messageBody) {
-            let self = this;
-            self.toastHeader = messageHeader;
-            self.toastMessage = messageBody;
-            self.toast.show();
+
+        async submitComment(event) {
+            event.preventDefault();
+            console.log(this.formData);
+            console.log(this.mapFormData());
+
+            const res = await fetch('/BlogApi/SubmitComment/', {
+                method: 'POST',
+                body: this.mapFormData()
+            }).catch(res => console.log(res));
+
+            this.blogViewModel = await res.json();
+            this.showToast(`Thank you for your comment, ${this.formData.name}!`,
+                "Check the bottom of this page to see it appear dynamically.");
+            this.resetFormData();
         },
+
+        mapFormData() {
+            const formData = new FormData();
+
+            formData.append("blogId", this.formData.blogId);
+            formData.append("commentId", this.formData.commentId);
+            formData.append("name", this.formData.name);
+            formData.append("email", this.formData.email);
+            formData.append("message", this.formData.message);
+
+            if (this.formData.fileUpload) {
+                formData.append("fileUpload", this.formData.fileUpload);
+            }
+
+            return formData;
+        },
+
+        showToast(header, body) {
+            this.toastHeader = header;
+            this.toastMessage = body;
+            this.toast.show();
+        },
+
         toAvatarUrl(name) {
-            return name == null
-                ? 'https://eu.ui-avatars.com/api/?name=A+B'
-                : `https://eu.ui-avatars.com/api/?name= + ${name.trim().split(/\s+/).join('+')}`;
+            const avatarName = name ? name.trim().split(/\s+/).join('+') : 'A+B';
+            return `https://eu.ui-avatars.com/api/?name=${avatarName}`;
         },
+
         resetFormData() {
-            let self = this;
-            self.formData = JSON.parse(JSON.stringify(self.originalFormData));
+            this.formData = this.deepClone(this.originalFormData);
         },
+
         resetReplyData() {
-            let self = this;
-            self.reply = JSON.parse(JSON.stringify(self.originalReply));
+            this.reply = this.deepClone(this.originalReply);
+        },
+
+        deepClone(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        },
+
+        handleFileChange(event) {
+            this.formData.fileUpload = event.target.files[0];
+        },
+
+        toggleCollapse(selector, show) {
+            const collapseElement = new bootstrap.Collapse(selector);
+            if (show) {
+                collapseElement.show();
+            } else {
+                collapseElement.hide();
+            }
         }
     }
 }).mount("#blog-js");

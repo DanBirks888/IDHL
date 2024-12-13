@@ -1,6 +1,6 @@
 ﻿<img src="./images/iDHL-DarkBlue.svg" alt="IDHL Logo" title="IDHL" width="90">
 
-# .NET Developer Assessment
+# .NET Developer Assessment - Dan Birks
 
 ## Overview
 

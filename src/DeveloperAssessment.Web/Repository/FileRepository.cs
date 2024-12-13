@@ -1,54 +1,46 @@
 using System.Text.Json;
 using DeveloperAssessment.Web.DomainModels;
+using DeveloperAssessment.Web.Extensions;
 using DeveloperAssessment.Web.Interfaces;
-using DeveloperAssessment.Web.ViewModels.FileUploads;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace DeveloperAssessment.Web.Repository;
 
-public class FileRepository
+public class FileRepository : IFileRepository
 {
     private readonly IFileService _fileService;
     private readonly IMemoryCache _memoryCache;
     private readonly ILogger<BlogRepository> _logger;
 
-    private readonly string _cacheKey = "blog";
+    private readonly string _cacheKey = "file";
 
-    public FileUploads GetUploadedFiles()
+    public FileRepository(IFileService fileService, IMemoryCache memoryCache, ILogger<BlogRepository> logger)
     {
-        // if (_memoryCache.TryGetValue(_cacheKey, out FileUploads? cachedBlogList))
-        // {
-        //     return cachedBlogList ?? new FileUploads();
-        // } 
-
-        try
-        {
-            var stream = _fileService.GetFileStream(Constants.FileNames.FileUploads);
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var fileUploads = JsonSerializer.Deserialize<FileUploads>(stream, options) ?? new FileUploads();
-
-            // _memoryCache.Set(_cacheKey, fileUploads, DateTimeOffset.Now.AddHours(1));
-            
-            return fileUploads;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error fetching File Uploads from file");
-            return new FileUploads();
-        }
+        _fileService = fileService;
+        _memoryCache = memoryCache;
+        _logger = logger;
     }
 
-    public void SaveFileUploads(FileUploads fileUploads)
+    public FileUploads GetAll()
     {
-        try
+        if (_memoryCache.TryGetValue(_cacheKey, out FileUploads? fileUploads))
         {
-            var jsonFileUploads = JsonSerializer.Serialize(fileUploads);
-            _fileService.WriteToFile(Constants.FileNames.FileUploads, jsonFileUploads);
-            // _memoryCache.Set(_cacheKey, fileUploads, DateTimeOffset.Now.AddHours(1));
+            return fileUploads ?? new FileUploads();
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error saving blogs to file");
-        }
+
+        return _fileService.DeserializeFromFile<FileUploads>(Constants.FileNames.FileUploads);
+    }
+
+    public FileUpload GetById(Guid id)
+    {
+        return GetAll().Files.FirstOrDefault() ?? new FileUpload();
+    }
+
+    public void Save(FileUpload fileUpload)
+    {
+        var newFileUploads = GetAll();
+        newFileUploads.Files.Add(fileUpload);
+        var jsonFileUpload = JsonSerializer.Serialize(newFileUploads);
+        _fileService.WriteToFile(Constants.FileNames.FileUploads, jsonFileUpload);
     }
 }

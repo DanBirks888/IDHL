@@ -4,7 +4,7 @@ namespace DeveloperAssessment.Web.Interfaces;
 
 public interface IBlogRepository
 {
-    BlogList GetBlogs();
+    BlogList GetAll();
     BlogPost GetById(int id);
-    void SaveBlogs(BlogList blogList);
+    void Save(BlogList blogList);
 }

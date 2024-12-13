@@ -41,7 +41,7 @@ public class FileService : IFileService
         using var memoryStream = new MemoryStream();
         formFile.CopyTo(memoryStream);
 
-        var fileUpload = new FileUpload
+        var fileUpload = new FileUploadViewModel
         {
             Id = new Guid(),
             Name = formFile.FileName,
@@ -64,9 +64,16 @@ public class FileService : IFileService
         WriteToFile(fileName, jsonData);
     }
 
-    public void WriteToFile(string path, string jsonString)
+    public void WriteToFile(string fileName, string jsonString)
     {
-        File.WriteAllText(GetPath(path), jsonString);
+        try
+        {
+            File.WriteAllText(GetPath(fileName), jsonString);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+        }
     }
 
     private string GetPath(string fileName)

@@ -8,8 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
+builder.Services.AddScoped<IFileRepository, FileRepository>();
 
 var app = builder.Build();
 

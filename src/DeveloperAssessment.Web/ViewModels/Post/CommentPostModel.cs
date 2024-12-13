@@ -1,5 +1,3 @@
-using DeveloperAssessment.Web.DomainModels;
-
 namespace DeveloperAssessment.Web.ViewModels.Post;
 
 public class CommentPostModel
@@ -8,5 +6,6 @@ public class CommentPostModel
     public string Name { get; init; }
     public string Email { get; init; }
     public string Message { get; init; }
-    
+    public IFormFile? FileUpload { get; init; }
+    public Guid? FormUploadId { get; set; }
 }

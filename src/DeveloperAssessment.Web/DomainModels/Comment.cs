@@ -9,5 +9,4 @@ public class Comment
     public string EmailAddress { get; init; }
     public string Message { get; init; }
     public List<string> Replies { get; init; } = new();
-
 }

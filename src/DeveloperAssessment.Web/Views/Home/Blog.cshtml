@@ -1,0 +1,141 @@
+@model DeveloperAssessment.Web.ViewModels.Blog.BlogPostViewModel
+
+<div class="container">
+    <div class="row">
+
+        <!-- Blog post content  HERE!-->
+        <div class="col-lg-12">
+
+            <!-- Title -->
+            @if (!string.IsNullOrEmpty(Model.Title))
+            {
+                <h1 class="mt-4">@Model.Title</h1>
+            }
+
+            <hr>
+            <!-- Date/Time -->
+            <p>Posted on @Model.Date.ToLongDateString()</p>
+
+            <hr>
+
+            <!-- Preview Image -->
+            @if (!string.IsNullOrEmpty(Model.Image))
+            {
+                <img class="img-fluid rounded" src="@Model.Image" alt="Top 5 Considerations for a Content-First Design Approach">
+            }
+
+            <hr>
+
+            <!-- Post Content -->
+
+            @if (!string.IsNullOrEmpty(Model.HtmlContent))
+            {
+                @Html.Raw(Model.HtmlContent)
+            }
+
+            <hr>
+
+            <div id="blog-js">
+                <!-- Blog post comment form -->
+                <div class="card my-4">
+                    <h5 class="card-header">Leave a Comment:</h5>
+                    <div class="card-body">
+                        <form v-on:submit:prevent="sendForm" enctype="multipart/form-data">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="Name">Name</label>
+                                    <input v-model="formData.name" type="text" class="form-control" id="Name" name="name" placeholder="Name" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="EmailAddress">Email Address</label>
+                                    <input v-model="formData.email" type="email" class="form-control" id="EmailAddress" name="email" placeholder="Email Address" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Message">Message</label>
+                                <textarea v-model="formData.message" id="Message" name="message" class="form-control" rows="3" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-4">
+                                <div class="input-group mb-3 bt-3 mt-3">
+                                    <input type="file" name="fileUpload" class="form-control" id="fileUpload">
+                                </div>
+                            </div>
+                            <button v-on:click="sendForm($event)" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+
+
+                <!-- Blog post comments -->
+                <div class="media mb-4" v-for="comment in blogViewModel.comments" v-cloak>
+                    <div class="media-body p-2">
+                        <div class="d-flex align-items-center py-2">
+                            <img class="me-2 rounded-circle user-avatar" :src="toAvatarUrl(comment.name)" :alt="comment.name">
+                            <div class="d-flex flex-column">
+                                <h5 class="mb-0">
+                                    {{comment.name}}
+                                </h5>
+                                <em>{{comment.formattedDate}}</em>
+                            </div>
+                        </div>
+                        {{comment.message}}
+
+                        <div class="col-lg-4 p-2">
+                            <div class="rounded border border-black p-3" v-show="comment?.replies?.length > 0">
+                                <h5>Replies</h5>
+                                <div v-for="reply in comment.replies">
+                                    <small>
+                                        <em>{{reply}}</em>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="media-body p-2">
+                        <button v-on:click="setupReply(comment.id)"
+                                class="btn btn-secondary py-2"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="collapseExample">
+                            Reply To Comment
+                        </button>
+                        <div class="collapse py-3 col-md-4" :id="'collapse-' + comment.id">
+                            <textarea v-model="reply.message" class="form-control col-md-4" rows="1"></textarea>
+                            <div class="py-2">
+                                <button v-on:click="sendReply(id)" class="btn btn-danger">Reply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toast Notification -->
+                <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+                    <div id="form-toast" class="toast text-white bg-black" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header">
+                            <strong class="me-auto">{{toastHeader}}</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            {{toastMessage}}
+                            Check the bottom of this page to see it appear dynamically.
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        var blogViewModel = @Html.Raw(Json.Serialize(Model));
+    </script>
+    <script src="~/js/blog-component.js"></script>
+}

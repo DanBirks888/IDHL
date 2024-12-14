@@ -2,8 +2,62 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome!</h1>
-    <h2 class="display-4">.NET Developer Assessment Dan Birks</h2>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@{
+ViewData["Title"] = "Home Page";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 text-center">
+            <h2 class="display-5 text-dark mb-3">.NET Developer Assessment</h2>
+            <p class="lead">By Dan Birks</p>
+            <p class="mb-4">Explore how I utilized ASP.NET Core to create this blog, showcasing key skills like MVC, routing, and data handling.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-img-container" style="height: 300px; overflow: hidden;">
+                    <img src="https://api.otakoyi.software/uploads/content/2023/11/20/1280/vuejs-and-seo--your-steps-to-take-to-become-more-seo-friendly-317x237.webp" class="card-img-top" style="object-fit: cover; width: 100%; height: 100%;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">VUE JS</h5>
+                    <p class="card-text">For simple and effective reactivity in an application without the commitment of using a full front-end framework.</p>
+                    <a href="https://vuejs.org/" class="btn btn-primary">Visit Documentation</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-img-container" style="height: 300px; overflow: hidden;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTfSLVg8gt7MNsO_2VnlTAsju-7sUhfslVjw&s" class="card-img-top" style="object-fit: cover; width: 100%; height: 100%;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">MVC Architecture</h5>
+                    <p class="card-text">Learn about the Model-View-Controller architecture, a key concept in ASP.NET Core development.</p>
+                    <a href="https://dotnet.microsoft.com/en-us/apps/aspnet/mvc" class="btn btn-secondary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-img-container" style="height: 300px; overflow: hidden;">
+                    <img src="https://media.licdn.com/dms/image/D4D12AQExK05GcscPTA/article-cover_image-shrink_600_2000/0/1681945235298?e=2147483647&v=beta&t=RdSjCdnz5uhIv0rJuFAmAL8PkOzMqdhsz6_LvqkuzjQ" class="card-img-top" style="object-fit: cover; width: 100%; height: 100%;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Data Handling</h5>
+                    <p class="card-text">Understand how to handle data efficiently, including routing, caching, and persistence with .NET Core.</p>
+                    <a href="https://learn.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application" class="btn btn-secondary">Explore Techniques</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="text-center mt-5 mb-3">
+        <p class="text-muted">This blog was built with love and passion for .NET development. Feel free to explore and provide feedback!</p>
+        <p><a href="#top" class="btn btn-outline-primary">Back to Top</a></p>
+    </div>
 </div>
+

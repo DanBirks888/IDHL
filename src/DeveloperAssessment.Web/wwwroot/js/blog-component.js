@@ -54,7 +54,7 @@ app.blogController = Vue.createApp({
                 body: JSON.stringify(bodyData)
             }).catch(res => console.log(res));
 
-            this.blogViewModel = res.json();
+            this.blogViewModel = await res.json();
             this.toggleCollapse(`#collapse-${this.reply.commentId}`, false);
             this.resetReplyData();
         },

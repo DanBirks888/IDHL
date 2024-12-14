@@ -9,12 +9,15 @@ public class BlogApiController : Controller
 {
     private readonly IBlogService _blogService;
     private readonly IFileUploadService _fileUploadService;
+    private readonly IPaginationService _paginationService;
 
     public BlogApiController(IBlogService blogService,
-        IFileUploadService fileUploadService)
+        IFileUploadService fileUploadService,
+        IPaginationService paginationService)
     {
         _blogService = blogService;
         _fileUploadService = fileUploadService;
+        _paginationService = paginationService;
     }
 
     public async Task<IActionResult> SubmitComment([FromForm] CommentPostModel commentPostModel)
@@ -29,5 +32,13 @@ public class BlogApiController : Controller
     {
         var blogPost = _blogService.ReplyToComment(replyPostModel);
         return Ok(blogPost.ToViewModel());
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetPaginatedBlogs(int pageIndex, int pageSize)
+    {
+        var blogs = _blogService.GetAll();
+        var pagedBlogs = _paginationService.Paginate(blogs.BlogPosts, pageIndex, pageSize);
+        return Ok(pagedBlogs);
     }
 }

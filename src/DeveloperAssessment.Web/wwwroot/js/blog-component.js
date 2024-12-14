@@ -51,7 +51,7 @@ app.blogController = Vue.createApp({
             const res = await fetch('/BlogApi/ReplyToComment/', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(bodyData)
+                body: JSON.stringify(this.reply)
             }).catch(res => console.log(res));
 
             this.blogViewModel = await res.json();

@@ -22,6 +22,12 @@ public class BlogApiController : Controller
 
     public async Task<IActionResult> SubmitComment([FromForm] CommentPostModel commentPostModel)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = GetErrors();
+            return BadRequest(new { success = false, errors });
+        }
+
         if (commentPostModel.FileUpload != null)
         {
             var localDownloadUrl = _fileService.SaveFileUploadToDirectory(commentPostModel.FileUpload);
@@ -29,13 +35,20 @@ public class BlogApiController : Controller
         }
 
         var blogPost = _blogService.AddCommentToBlogPost(commentPostModel);
-        return Ok(blogPost.ToViewModel());
+        return Ok(new { success = true, data = blogPost.ToViewModel() });
     }
+
 
     public async Task<IActionResult> ReplyToComment([FromBody] ReplyPostModel replyPostModel)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = GetErrors();
+            return BadRequest(new { success = false, errors });
+        }
+
         var blogPost = _blogService.ReplyToComment(replyPostModel);
-        return Ok(blogPost.ToViewModel());
+        return Ok(new { success = true, data = blogPost.ToViewModel() });
     }
 
     [HttpGet]
@@ -44,5 +57,13 @@ public class BlogApiController : Controller
         var blogs = _blogService.GetAll();
         var pagedBlogs = _paginationService.Paginate(blogs.BlogPosts, pageIndex, pageSize);
         return Ok(pagedBlogs);
+    }
+
+    private List<string> GetErrors()
+    {
+        return ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
     }
 }

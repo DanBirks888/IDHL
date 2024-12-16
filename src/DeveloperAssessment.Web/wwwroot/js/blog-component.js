@@ -49,13 +49,20 @@ app.blogController = Vue.createApp({
             if (!this.reply.message || !this.reply.commentId || !this.reply.blogId) {
                 return this.showToast("Reply Failed!", "Please try again");
             }
+
             const res = await fetch('/BlogApi/ReplyToComment/', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(this.reply)
             }).catch(res => console.log(res));
 
-            this.blogViewModel = await res.json();
+            let result = await res.json();
+            if (!result.success) {
+                this.parseErrors(result.errors);
+                return;
+            }
+
+            this.blogViewModel = result.data;
             this.toggleCollapse(`#collapse-${this.reply.commentId}`, false);
             this.resetReplyData();
         },
@@ -68,12 +75,23 @@ app.blogController = Vue.createApp({
                 body: this.mapFormData()
             }).catch(res => console.log(res));
 
-            this.blogViewModel = await res.json();
+            let result = await res.json();
+            if (!result.success) {
+                this.parseErrors(result.errors);
+                return;
+            }
+
+            this.blogViewModel = result.data;
             this.showToast(`Thank you for your comment, ${this.formData.name}!`,
                 "Check the bottom of this page to see it appear dynamically.");
             this.resetFormData();
         },
 
+        parseErrors(errors) {
+            errors.forEach(error => {
+                this.showToast("Server Side Validation Error", error);
+            });
+        },
         mapFormData() {
             const formData = new FormData();
 

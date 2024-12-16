@@ -8,21 +8,25 @@ namespace DeveloperAssessment.Web.Controllers;
 public class BlogApiController : Controller
 {
     private readonly IBlogService _blogService;
-    private readonly IFileUploadService _fileUploadService;
+    private readonly IFileService _fileService;
     private readonly IPaginationService _paginationService;
 
     public BlogApiController(IBlogService blogService,
-        IFileUploadService fileUploadService,
+        IFileService fileService,
         IPaginationService paginationService)
     {
         _blogService = blogService;
-        _fileUploadService = fileUploadService;
+        _fileService = fileService;
         _paginationService = paginationService;
     }
 
     public async Task<IActionResult> SubmitComment([FromForm] CommentPostModel commentPostModel)
     {
-        commentPostModel.FormUploadId = _fileUploadService.Save(commentPostModel.FileUpload);
+        if (commentPostModel.FileUpload != null)
+        {
+            var localDownloadUrl = _fileService.SaveFileUploadToDirectory(commentPostModel.FileUpload);
+            commentPostModel.AppendDownloadUrl(Request.Host.Value, localDownloadUrl);
+        }
 
         var blogPost = _blogService.AddCommentToBlogPost(commentPostModel);
         return Ok(blogPost.ToViewModel());

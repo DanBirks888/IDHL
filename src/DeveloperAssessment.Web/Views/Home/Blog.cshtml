@@ -76,6 +76,14 @@
                         </div>
                         <p>{{comment.message}}</p>
 
+                        <div v-if="comment.downloadUrl">
+                            <a :href="comment.downloadUrl"
+                               target="_blank"
+                               class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                Download Attachment -> {{comment.downloadName}}
+                            </a>
+                        </div>
+
                         <div class="col-lg-4 p-3" v-show="comment?.replies?.length > 0">
                             <div class="rounded border border-black p-2">
                                 <h5>Replies</h5>
@@ -123,7 +131,7 @@
 
 @section Scripts {
     <script>
-    var blogViewModel = @Html.Raw(Json.Serialize(Model));
-</script>
+        var blogViewModel = @Html.Raw(Json.Serialize(Model));
+    </script>
     <script src="~/js/blog-component.js"></script>
 }

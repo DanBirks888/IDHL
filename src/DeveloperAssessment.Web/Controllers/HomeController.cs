@@ -37,7 +37,7 @@ public class HomeController : Controller
         return View(blogPost.ToViewModel());
     }
 
-    public IActionResult BlogListing()
+    public IActionResult Blogs()
     {
         var blogPost = _blogService.GetAll();
         return View(blogPost.ToViewModel());

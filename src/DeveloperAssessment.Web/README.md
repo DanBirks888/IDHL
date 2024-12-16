@@ -8,9 +8,8 @@ You are tasked with creating a blog post page using the [provided solution](./De
 
 ## Assessments
 
-We have two assessments designed for different skill levels: one for junior developers and another for intermediate developers. Please select the appropriate markdown file based on the role you are applying for:
+I have chosen to implement the following assessment ->
 
-- [Junior Developer Assessment](./docs/JuniorDevAssessment.md)
 - [Intermediate Developer Assessment](./docs/IntermediateDevAssessment.md)
 
 ## Provided Resources

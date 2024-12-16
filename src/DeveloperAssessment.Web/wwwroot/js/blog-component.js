@@ -10,6 +10,7 @@ app.blogController = Vue.createApp({
                 email: null,
                 message: null,
                 fileUpload: null,
+                downloadName: null,
             },
             reply: {
                 blogId: null,
@@ -29,7 +30,7 @@ app.blogController = Vue.createApp({
     methods: {
         initializeViewModel() {
             this.blogViewModel = blogViewModel;
-            this.reply.blogId = this.blogViewModel.id;
+            this.reply.blogId = this.blogViewModel?.id;
             this.formData.blogId = this.blogViewModel.id;
             this.originalFormData = this.deepClone(this.formData);
             this.originalReply = this.deepClone(this.reply);
@@ -61,8 +62,6 @@ app.blogController = Vue.createApp({
 
         async submitComment(event) {
             event.preventDefault();
-            console.log(this.formData);
-            console.log(this.mapFormData());
 
             const res = await fetch('/BlogApi/SubmitComment/', {
                 method: 'POST',
@@ -86,6 +85,7 @@ app.blogController = Vue.createApp({
 
             if (this.formData.fileUpload) {
                 formData.append("fileUpload", this.formData.fileUpload);
+                formData.append("downloadName", this.formData.downloadName);
             }
 
             return formData;
@@ -104,6 +104,7 @@ app.blogController = Vue.createApp({
 
         resetFormData() {
             this.formData = this.deepClone(this.originalFormData);
+            document.getElementById('fileUpload').value = "" // Reset Selected File
         },
 
         resetReplyData() {
@@ -116,6 +117,7 @@ app.blogController = Vue.createApp({
 
         handleFileChange(event) {
             this.formData.fileUpload = event.target.files[0];
+            this.formData.downloadName = this.formData.fileUpload.name;
         },
 
         toggleCollapse(selector, show) {

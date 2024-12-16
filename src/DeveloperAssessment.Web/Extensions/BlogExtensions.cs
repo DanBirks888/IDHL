@@ -1,6 +1,5 @@
 using DeveloperAssessment.Web.DomainModels;
 using DeveloperAssessment.Web.ViewModels.Blog;
-using DeveloperAssessment.Web.ViewModels.FileUploads;
 using DeveloperAssessment.Web.ViewModels.Post;
 
 namespace DeveloperAssessment.Web.Extensions;
@@ -59,6 +58,8 @@ public static class BlogExtensions
             Message = comment.Message,
             Replies = comment.Replies,
             FormattedDate = $"({comment.Date.ToLongDateString()} - {comment.Date.ToLongTimeString()})",
+            DownloadName = comment.DownloadName,
+            DownloadUrl = comment.DownloadUrl
         };
     }
 
@@ -72,7 +73,8 @@ public static class BlogExtensions
         return new Comment
         {
             Id = Guid.NewGuid(),
-            FileUploadId = comment.FormUploadId,
+            DownloadName = comment.DownloadName,
+            DownloadUrl = comment.DownloadUrl,
             Name = comment.Name,
             Date = DateTime.Now,
             EmailAddress = comment.Email,
@@ -80,5 +82,4 @@ public static class BlogExtensions
             Replies = []
         };
     }
-
 }

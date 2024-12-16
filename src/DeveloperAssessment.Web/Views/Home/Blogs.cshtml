@@ -14,6 +14,7 @@
 
                         @* Demo of truncated HTML content, but does not suit the card so will leave out *@
                         @* <div class="card-text mb-auto pb-3 text-truncate" v-html="blog.htmlContent"></div> *@
+                        
                         <p class="card-text mb-auto pb-3">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
 
                         <a :href="'/home/blog/' + blog.id" class="btn btn-success mt-auto">Go somewhere</a>
@@ -60,8 +61,5 @@
 </div>
 
 @section Scripts {
-    @* <script> *@
-    @*     var pagedBlogsViewModel = @Html.Raw(Json.Serialize(Model)); *@
-    @* </script> *@
     <script src="~/js/blog-pagination-component.js"></script>
 }
